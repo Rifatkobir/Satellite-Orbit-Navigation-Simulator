@@ -13,6 +13,10 @@ orbital_speed = math.sqrt(earth_mu / orbit_radius)
 angular_velocity = orbital_speed / orbit_radius
 orbital_period = 2 * math.pi / angular_velocity
 
+# Visual scaling factors (for display only)
+velocity_visual_scale = 300
+acceleration_visual_scale = 250
+
 # Simulation state
 elapsed_seconds = 0
 time_step = 10
@@ -113,6 +117,7 @@ def update(frame):
 
     elapsed_seconds += time_step
     angle = angular_velocity * elapsed_seconds
+    orbital_angle = math.degrees(angle) % 360
 
     x = orbit_radius * math.cos(angle) / 1000
     y = orbit_radius * math.sin(angle) / 1000
@@ -145,15 +150,17 @@ def update(frame):
     satellite.set_data([x], [y])
 
     velocity_arrow.set_offsets([[x, y]])
-    velocity_arrow.set_UVC(vx * 300, vy * 300)
+    velocity_arrow.set_UVC(
+        vx * velocity_visual_scale,
+        vy * velocity_visual_scale
+    )
 
     # Update acceleration arrow
     acceleration_arrow.set_offsets([[x, y]])
 
-    arrow_scale = 500
     acceleration_arrow.set_UVC(
-        ax_acc * arrow_scale,
-        ay_acc * arrow_scale
+        ax_acc * acceleration_visual_scale,
+        ay_acc * acceleration_visual_scale
     )
 
     trail.set_data(trail_x, trail_y)
@@ -162,6 +169,7 @@ def update(frame):
         f"SATELLITE TELEMETRY\n"
         f"────────────────────\n"
         f"Elapsed time: {elapsed_seconds / 60:.1f} min\n"
+        f"Orbital angle: {orbital_angle:.2f}°\n"
         f"X position: {x:.2f} km\n"
         f"Y position: {y:.2f} km\n"
         f"Altitude: {altitude:.2f} km\n"
